@@ -1,65 +1,41 @@
-import test from "@playwright/test";
-import { LoginPage } from "../pages/LoginPage";
+import {test} from "../fixtures/fixtures";
 import { userData } from "../test-data/signupdata";
-import { SignupPage } from "../pages/SignupPage";
 import { env } from "../config/environment";
 import { autoEmail } from "../utils/autoEmail";
 
-test('Task 4 - Data driven testing in login page',async({page}) => {
-
-    const loginPage = new LoginPage(page);
-
-    const signupPage = new SignupPage(page);
-
-    await signupPage.navigate(env.baseurl)
-
-    await signupPage.clickSignUpLogin();
-
-    await signupPage.verifySignUpFormVisible();
-
-    console.log("Empty Email Field Check")
-
-    await loginPage.fillPassword(userData.registerUserDate.Password);
-
-    await loginPage.clickLoginButton();
-
-    await  loginPage.validateEmailField(userData.loginUserData.emptyFieldMessage);
-
-    console.log("Empty Password Field Check")
-    
-    await page.reload();
+test('Task 4 - Data driven testing in login page',async({signupPage, loginPage, basePage}) => {
 
     const email = autoEmail.generateEmail();
 
-    await loginPage.fillEmail(email);
+    await test.step("Open Signup Form", async () => {
+        await signupPage.openSignupForm();
+    });
 
-    await loginPage.clickLoginButton();
+await test.step("Validate Empty Email Field", async () => {
+    await loginPage.validateEmptyEmailFieldValidation(userData.registerUserDate.Password,userData.loginUserData.emptyFieldMessage);
+});
 
-    await  loginPage.validatePasswordField(userData.loginUserData.emptyFieldMessage);
+await test.step("Validate Empty Password Field", async () => {
+    await basePage.reloadpage();
 
-    console.log("Invalid Password")
-    
-    await page.reload();
+    await loginPage.validateEmptyPasswordFieldValidation(email,userData.loginUserData.emptyFieldMessage);
+});
 
-    await loginPage.fillEmail(email);
+await test.step("Validate Invalid Password ", async () => {
+    await basePage.reloadpage();
 
-    await loginPage.fillPassword(userData.loginUserData.incorrectPassword);
+    await loginPage.login(email,userData.loginUserData.incorrectPassword);
 
-    await loginPage.clickLoginButton();
+    await loginPage.incorrectEmailOrPasswordMessageCheck();
+});
 
-    await  loginPage.incorrectEmailOrPasswordMessageCheck();
+await test.step("Validate Invalid Email ", async () => {
+    await basePage.reloadpage();
 
-    console.log("Invalid Email")
-    
-    await page.reload();
+    await loginPage.login(userData.loginUserData.incorrectEmail,userData.registerUserDate.Password);
 
-    await loginPage.fillEmail(userData.loginUserData.incorrectEmail);
-
-    await loginPage.fillPassword(userData.registerUserDate.Password);
-
-    await loginPage.clickLoginButton();
-
-    await  loginPage.incorrectEmailOrPasswordMessageCheck();
+    await loginPage.incorrectEmailOrPasswordMessageCheck();
+});
 
 
 }) 

@@ -1,65 +1,56 @@
-import test from "@playwright/test";
-import { SignupPage } from "../pages/SignupPage";
-import { registerUser } from "../pages/RegisterUserPage";
-import { env } from "../config/environment";
+import { test } from "../fixtures/fixtures";
 import { userData } from "../test-data/signupdata"; 
 import { autoEmail } from "../utils/autoEmail";
-import { LoginPage } from "../pages/LoginPage";
 
-test ("Task 2 - Register New user form", async({page})=> {
-
-const registerUserPage = new registerUser(page);
-const signupPage = new SignupPage(page);
-const loginPage = new LoginPage(page);
+test ("Task 2 - Register New user form", async({registerUserPage, signupPage, loginPage})=> {
 
 const email = autoEmail.generateEmail();
 
-await signupPage.navigate(env.baseurl);
+await test.step("Open Signup Form", async () => {
+    await signupPage.openSignupForm();
+}
+);
 
-await signupPage.clickSignUpLogin();
-
-await signupPage.verifySignUpFormVisible();
-
-await signupPage.enterName(userData.signUpUserData.name);
-
-await signupPage.enterEmail(email);
+await test.step("Enter Signup Details", async () => {
+    await signupPage.enterSignupDetails(userData.signUpUserData.name, email);
+}
+);
 
 await signupPage.clickSignUpButton();
 
-await registerUserPage.clickCreateAccountButton();
+await test.step("Verify Password Validation Message", async () => {
+    await registerUserPage.clickCreateAccountButton();
+    await registerUserPage.verifyPasswordValidationMessage(userData.registerUserDate.PasswordValidation);
+}
+);
 
-await registerUserPage.verifyPasswordValidationMessage(userData.registerUserDate.PasswordValidation);
+await test.step("Fill Account Details", async () => {
+    await registerUserPage.fillAccountDetails(userData.registerUserDate.Password, userData.registerUserDate.FirstName, userData.registerUserDate.LastName, userData.registerUserDate.Address, userData.registerUserDate.State, userData.registerUserDate.City, userData.registerUserDate.ZipCode, userData.registerUserDate.MobileNumber);
+}
+);
 
-await registerUserPage.fillpassword(userData.registerUserDate.Password);
+await test.step("Create Account", async () => {
+    await registerUserPage.clickCreateAccountButton();
 
-await registerUserPage.fillFirstName(userData.registerUserDate.FirstName);
+    await registerUserPage.validateAccountCreatedMessage();
 
-await registerUserPage.fillLastName(userData.registerUserDate.LastName);
+    await registerUserPage.clickContinueButton();
+}
+);
 
-await registerUserPage.fillAddress(userData.registerUserDate.Address);
+await test.step("Logout", async () => {
+    await registerUserPage.clickLogout();
+}
+);
 
-await registerUserPage.fillState(userData.registerUserDate.State);
+await test.step("Login with newly created user", async () => {
+    await loginPage.login(email, userData.registerUserDate.Password);
+}
+);
 
-await registerUserPage.fillCity(userData.registerUserDate.City);
-
-await registerUserPage.fillZipCode(userData.registerUserDate.ZipCode);
-
-await registerUserPage.fillMobileNumber(userData.registerUserDate.MobileNumber);
-
-await registerUserPage.clickCreateAccountButton();
-
-await registerUserPage.validateAccountCreatedMessage();
-
-await registerUserPage.clickContinueButton();
-
-await registerUserPage.clickLogout();
-
-await loginPage.fillEmail(email);
-
-await loginPage.fillPassword(userData.registerUserDate.Password);
-
-await loginPage.clickLoginButton();
-
-await registerUserPage.clickLogout();
+await test.step("Logout after successful login", async () => {
+    await registerUserPage.clickLogout();
+}
+);
 
 })

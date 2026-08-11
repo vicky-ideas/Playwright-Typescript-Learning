@@ -19,6 +19,10 @@ async fill(locator:any,value:string, name:string){
     await locator.fill(value);
 }
 
+async reloadpage(){
+    await this.page.reload();
+}
+
 async verifyValidationMessage(locator:any, name:string, expectedMessage:string) : Promise<void> {
     logger.info(`Verifying ${name}`)
    const actualMessage =  await locator.evaluate((element: HTMLInputElement) => {

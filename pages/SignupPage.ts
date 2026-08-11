@@ -1,6 +1,7 @@
-import { expect, Page } from "@playwright/test";
 import { autoEmail } from "../utils/autoEmail";
 import { BaseClass } from "./BasePage";
+import { env } from "../config/environment";
+import { userData } from "../test-data/signupdata";
 
 export class SignupPage extends BaseClass {
 
@@ -49,6 +50,29 @@ public async validateNameValidation(message:string): Promise<void> {
 
 public async validateInvalidEmailMessage(message:string): Promise<void> {
   await  this.verifyValidationMessage(this.emailTextBox(),"Invalid Email Field Validation Message",message);
+}
+
+public async openSignupForm(): Promise<void> {
+  await this.navigate(env.baseurl);
+  await this.clickSignUpLogin();
+  await this.verifySignUpFormVisible();
+}
+
+public async enterSignupDetails(name: string, email: string): Promise<void> {
+  await this.enterName(name);
+  await this.enterEmail(email);
+}
+
+public async validateEmptyNameFieldValidation(message: string): Promise<void> {
+ await this.clickSignUpButton();
+ await this.validateNameValidation(message)
+}
+
+public async validateInvalidEmailFormatValidation(name: string, InvalidEmail: string, message: string): Promise<void> { 
+await this.enterName(name);
+await this.enterEmail(InvalidEmail);
+await this.clickSignUpButton();
+await this.validateInvalidEmailMessage(message)
 }
 
 }

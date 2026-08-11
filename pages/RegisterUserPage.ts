@@ -1,7 +1,7 @@
 import { expect, Page } from "@playwright/test";
 import { BaseClass } from "./BasePage";
 
-export class registerUser extends BaseClass{
+export class RegisterUserPage extends BaseClass{
 
  private readonly createAccountButton = () =>
     this.page.getByText ("Create Account");
@@ -92,6 +92,17 @@ public async clickContinueButton(): Promise<void> {
 
  public async clickLogout(): Promise<void> {
    await this.click(this.logout(),"Logout")
+ }
+
+ public async fillAccountDetails(password:string, firstname:string, lastname:string, address:string, state:string, city:string, zipcode:string, mobilenumber:string): Promise<void> {
+    await this.fillpassword(password);
+    await this.fillFirstName(firstname);
+    await this.fillLastName(lastname);
+    await this.fillAddress(address);
+    await this.fillState(state);
+    await this.fillCity(city);
+    await this.fillZipCode(zipcode);
+    await this.fillMobileNumber(mobilenumber);
  }
 
 }

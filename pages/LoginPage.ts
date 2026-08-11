@@ -39,4 +39,29 @@ public async incorrectEmailOrPasswordMessageCheck(): Promise<void>{
     await this.isElementVisible(this.InvalidEmailorPasswordMessage(),"Email or Password is Incorrect Message")
 }
 
+public async login(email:string, password:string): Promise<void>{
+    await this.fillEmail(email);
+    await this.fillPassword(password);
+    await this.clickLoginButton(); 
+}
+
+public async validateEmptyEmailFieldValidation(password:string,message:string): Promise<void>{
+
+    await this.fillPassword(password);
+
+    await this.clickLoginButton();
+
+    await  this.validateEmailField(message);
+}
+
+public async validateEmptyPasswordFieldValidation(email:string,message:string): Promise<void>{
+
+    await this.fillEmail(email);
+
+    await this.clickLoginButton();
+
+    await  this.validatePasswordField(message);
+
+}
+
 }

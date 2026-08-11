@@ -3,7 +3,6 @@ import { autoEmail } from "../utils/autoEmail"
 export const userData = {
 signUpUserData : {
     name: "John",
-    email: autoEmail.generateEmail
 },
 
 registerUserDate :{
