@@ -4,12 +4,20 @@ import { SignupPage } from "../pages/SignupPage";
 import { LoginPage } from "../pages/LoginPage";
 import {BaseClass} from "../pages/BasePage";
 import {RegisterUserPage} from "../pages/RegisterUserPage";
+import { SauceDemoLoginPage } from "../pages/SauceLoginPage";
+import { SauceDemoProductsPage } from "../pages/SauceProductPage";
+import { SauceDemoCartPage } from "../pages/SauceCartPage";
+import { SauceDemoCheckOutPage } from "../pages/SauceCheckOutPage";
 
 type PageFixtures = {
   signupPage: SignupPage;
   loginPage: LoginPage;
   basePage: BaseClass;
   registerUserPage: RegisterUserPage;
+  sauceDemoLoginPage: SauceDemoLoginPage;
+  sauceDemoProductsPage: SauceDemoProductsPage;
+  sauceDemoCartPage: SauceDemoCartPage;
+  sauceDemoCheckOutPage: SauceDemoCheckOutPage;
 };
 
 export const test = base.extend<PageFixtures>({
@@ -36,7 +44,33 @@ export const test = base.extend<PageFixtures>({
     const registerUserPage = new RegisterUserPage(page);
 
     await use(registerUserPage);
+  },
+
+  sauceDemoLoginPage: async ({ page }, use) => {
+    const sauceDemoLoginPage = new SauceDemoLoginPage(page);  
+
+    await use(sauceDemoLoginPage);
+  },
+
+  sauceDemoProductsPage: async ({ page }, use) => {
+    const sauceDemoProductsPage = new SauceDemoProductsPage(page);
+
+    await use(sauceDemoProductsPage);
+
+  },
+
+  sauceDemoCartPage: async ({ page }, use) => {
+    const sauceDemoCartPage = new SauceDemoCartPage(page);
+
+    await use(sauceDemoCartPage);
+  },
+
+  sauceDemoCheckOutPage: async ({ page }, use) => {
+    const sauceDemoCheckOutPage = new SauceDemoCheckOutPage(page);
+
+    await use(sauceDemoCheckOutPage);
   }
+
 
   });
 
