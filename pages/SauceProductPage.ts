@@ -1,10 +1,9 @@
 import { expect } from "@playwright/test";
-import { BaseClass } from "./BasePage";
+import { BasePage } from "./BasePage";
 import { logger } from "../utils/logger";
 
-let products: string[] = [];
 
-export class SauceDemoProductsPage extends BaseClass {
+export class SauceDemoProductsPage extends BasePage {
   private readonly productsHeading = () =>
     this.page.getByText("Products", { exact: true });
 
@@ -21,36 +20,9 @@ export class SauceDemoProductsPage extends BaseClass {
 
   private readonly cartBadge = () => this.page.locator(".shopping_cart_badge");
 
-  private readonly backpackAddToCartButton = () =>
-    this.page.locator("//button[@data-test='add-to-cart-sauce-labs-backpack']");
-
-  private readonly bikelightAddToCartButton = () =>
-    this.page.locator(
-      "//button[@data-test='add-to-cart-sauce-labs-bike-light']",
-    );
-
-  private readonly onesieAddToCartButton = () =>
-    this.page.locator("//button[@data-test='add-to-cart-sauce-labs-onesie']");
-
   public async verifyProductsPage(): Promise<void> {
     await expect(this.productsHeading()).toBeVisible();
     logger.info("Products page is displayed");
-  }
-
-  public async addThreeProductsToCart(): Promise<string[]> {
-    const selectedProducts: string[] = [
-      "Sauce Labs Backpack",
-      "Sauce Labs Bike Light",
-      "Sauce Labs Onesie",
-    ];
-
-    await this.backpackAddToCartButton().click();
-    await this.bikelightAddToCartButton().click();
-    await this.onesieAddToCartButton().click();
-
-    await logger.info("Three products added to cart");
-
-    return selectedProducts;
   }
 
   public async verifyCartBadgeCount(expectedCount: number): Promise<void> {
@@ -59,35 +31,43 @@ export class SauceDemoProductsPage extends BaseClass {
 
   public async clickCartLink(): Promise<void> {
     await this.cartLink().click();
+  }
 
-    await logger.info("Navigated to the cart page");
+  public async selectsortOption(option: string): Promise<void> {
+    await this.sortDropdown().selectOption(option);
+    logger.info(`Selected sort option: ${option}`);
   }
 
   public async selectascSortOption(): Promise<void> {
-    await this.sortDropdown().selectOption("az");
     let products = await this.productNames().allTextContents();
-    let sortedProducts = products.sort((a, b) => a.localeCompare(b));
+    let sortedProducts = [...products].sort((a, b) => a.localeCompare(b));
     expect(products).toEqual(sortedProducts);
   }
 
   public async selectdescSortOption(): Promise<void> {
-    await this.sortDropdown().selectOption("za");
     let products = await this.productNames().allTextContents();
-    let sortedProducts = products.sort((a, b) => b.localeCompare(a));
+    let sortedProducts = [...products].sort((a, b) => b.localeCompare(a));
     expect(products).toEqual(sortedProducts);
   }
 
   public async selectlowtohighSortOption(): Promise<void> {
-    await this.sortDropdown().selectOption("lohi");
-    let products = await this.productPrices().allTextContents();
-    let sortedProducts = products.sort((a, b) => a.localeCompare(b));
-    expect(products).toEqual(sortedProducts);
+    let productPrices = await this.productPrices().allTextContents();
+    let Prices = productPrices.map((price) => Number(price.replace("$", "")));
+    let sortedPrices = [...Prices].sort((a, b) => a - b);
+    expect(Prices).toEqual(sortedPrices);
   }
 
   public async selecthightolowSortOption(): Promise<void> {
-    await this.sortDropdown().selectOption("hilo");
-    let products = await this.productPrices().allTextContents();
-    let sortedProducts = products.sort((a, b) => b.localeCompare(a));
-    expect(products).toEqual(sortedProducts);
+    let productPrices = await this.productPrices().allTextContents();
+    let Prices = productPrices.map((price) => Number(price.replace("$", "")));
+    let sortedPrices = [...Prices].sort((a, b) => b - a);
+    expect(Prices).toEqual(sortedPrices);
   }
+
+  public async addProductToCart(productName: string): Promise<void> {
+    const product = this.page.locator(".inventory_item").filter({ hasText: productName });
+    await product.getByRole("button", { name: /Add to cart/i }).click();
+    logger.info(`Product added to cart: ${productName}`);
+}
+
 }

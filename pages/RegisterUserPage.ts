@@ -1,7 +1,7 @@
 import { expect, Page } from "@playwright/test";
-import { BaseClass } from "./BasePage";
+import { BasePage } from "./BasePage";
 
-export class RegisterUserPage extends BaseClass{
+export class RegisterUserPage extends BasePage{
 
  private readonly createAccountButton = () =>
     this.page.getByText ("Create Account");

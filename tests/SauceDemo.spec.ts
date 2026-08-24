@@ -8,7 +8,12 @@ test("Task 5 - SauceDemo Shopping ", async ({
   sauceDemoCartPage,
   sauceDemoCheckOutPage,
 }) => {
-  let selectedProducts: string[] = [];
+
+  const selectedProducts: string[] = [
+    "Sauce Labs Backpack",
+    "Sauce Labs Bike Light",
+    "Sauce Labs Onesie",
+  ];
 
   await test.step("Login using valid credentials", async () => {
     await sauceDemoLoginPage.navigate(env.sauceDemoUrl);
@@ -24,25 +29,36 @@ test("Task 5 - SauceDemo Shopping ", async ({
   });
 
   await test.step("Sort products in ascending order", async () => {
+    await sauceDemoProductsPage.selectsortOption("az");
     await sauceDemoProductsPage.selectascSortOption();
   });
 
   await test.step("Sort products in descending order", async () => {
+    await sauceDemoProductsPage.selectsortOption("za");
     await sauceDemoProductsPage.selectdescSortOption();
   });
 
   await test.step("Sort products from low to high", async () => {
+    await sauceDemoProductsPage.selectsortOption("lohi");
     await sauceDemoProductsPage.selectlowtohighSortOption();
   });
 
   await test.step("Sort products from high to low", async () => {
+    await sauceDemoProductsPage.selectsortOption("hilo");
     await sauceDemoProductsPage.selecthightolowSortOption();
   });
 
   await test.step("Add products to cart", async () => {
-    selectedProducts = await sauceDemoProductsPage.addThreeProductsToCart();
+
+    for (const product of selectedProducts) {
+      await sauceDemoProductsPage.addProductToCart(product);
+    }
+  });
+
+  await test.step("Verify cart badge count", async () => {
     await sauceDemoProductsPage.verifyCartBadgeCount(3);
   });
+
 
   await test.step("Click on cart link", async () => {
     await sauceDemoProductsPage.clickCartLink();

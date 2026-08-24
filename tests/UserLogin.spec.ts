@@ -1,5 +1,5 @@
 import {test} from "../fixtures/fixtures";
-import { userData } from "../test-data/signupdata";
+import { userData } from "../test-data/signupData";
 import { env } from "../config/environment";
 import { autoEmail } from "../utils/autoEmail";
 

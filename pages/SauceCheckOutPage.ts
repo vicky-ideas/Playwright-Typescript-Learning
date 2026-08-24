@@ -1,8 +1,8 @@
 import { expect } from "@playwright/test";
-import { BaseClass } from "./BasePage";
+import { BasePage } from "./BasePage";
 import { logger } from "../utils/logger";
 
-export class SauceDemoCheckOutPage extends BaseClass {
+export class SauceDemoCheckOutPage extends BasePage {
   private readonly firstNameInput = () =>
     this.page.getByRole("textbox", {
       name: "First Name",

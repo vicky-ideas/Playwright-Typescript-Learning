@@ -1,9 +1,8 @@
-import { autoEmail } from "../utils/autoEmail";
-import { BaseClass } from "./BasePage";
+import { BasePage } from "./BasePage";
 import { env } from "../config/environment";
-import { userData } from "../test-data/signupdata";
+import { logger } from "../utils/logger";
 
-export class SignupPage extends BaseClass {
+export class SignupPage extends BasePage {
 
  private readonly signupLoginLink = 
  () => this.page.getByRole ("link" , {name: " Signup / Login"});

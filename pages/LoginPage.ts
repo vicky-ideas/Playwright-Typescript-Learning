@@ -1,7 +1,7 @@
 import { Page } from "@playwright/test";
-import { BaseClass } from "./BasePage";
+import { BasePage } from "./BasePage";
 
-export class LoginPage extends BaseClass {
+export class LoginPage extends BasePage {
 
 private readonly emailAddressTextBox = () =>
     this.page.locator('[data-qa="login-email"]');

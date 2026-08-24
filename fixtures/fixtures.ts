@@ -2,7 +2,7 @@ import { test as base, expect } from "@playwright/test";
 
 import { SignupPage } from "../pages/SignupPage";
 import { LoginPage } from "../pages/LoginPage";
-import {BaseClass} from "../pages/BasePage";
+import {BasePage} from "../pages/BasePage";
 import {RegisterUserPage} from "../pages/RegisterUserPage";
 import { SauceDemoLoginPage } from "../pages/SauceLoginPage";
 import { SauceDemoProductsPage } from "../pages/SauceProductPage";
@@ -12,7 +12,7 @@ import { SauceDemoCheckOutPage } from "../pages/SauceCheckOutPage";
 type PageFixtures = {
   signupPage: SignupPage;
   loginPage: LoginPage;
-  basePage: BaseClass;
+  basePage: BasePage;
   registerUserPage: RegisterUserPage;
   sauceDemoLoginPage: SauceDemoLoginPage;
   sauceDemoProductsPage: SauceDemoProductsPage;
@@ -35,7 +35,7 @@ export const test = base.extend<PageFixtures>({
   },
 
    basePage: async ({ page }, use) => {
-    const basePage = new BaseClass(page);
+    const basePage = new BasePage(page);
 
     await use(basePage);
   },

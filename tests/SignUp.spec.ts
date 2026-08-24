@@ -1,5 +1,5 @@
 import {test} from "../fixtures/fixtures";
-import {userData} from "../test-data/signupdata";
+import {userData} from "../test-data/signupData";
 import { autoEmail } from "../utils/autoEmail";
 
 test.beforeEach(async({signupPage}) => {
