@@ -2,6 +2,15 @@ import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
 import { logger } from "../utils/logger";
 
+export const SORT_OPTIONS = {
+  NAME_ASCENDING: "az",
+  NAME_DESCENDING: "za",
+  PRICE_LOW_TO_HIGH: "lohi",
+  PRICE_HIGH_TO_LOW: "hilo"
+  } as const
+
+export type SortOption = typeof SORT_OPTIONS [keyof typeof SORT_OPTIONS];
+
 
 export class SauceDemoProductsPage extends BasePage {
   private readonly productsHeading = () =>
@@ -38,29 +47,36 @@ export class SauceDemoProductsPage extends BasePage {
     logger.info(`Selected sort option: ${option}`);
   }
 
-  public async selectascSortOption(): Promise<void> {
-    let products = await this.productNames().allTextContents();
-    let sortedProducts = [...products].sort((a, b) => a.localeCompare(b));
+  public async getProductNames(): Promise<string []> {
+    return await this.productNames().allTextContents();
+  }
+
+  public async getProductPrices(): Promise<number[]> {
+    const productPrices = await this.productPrices().allTextContents();
+    return productPrices.map((price) => Number(price.replace("$", "")));
+  }
+
+  public async verifyProductsSortedByNameAscending(): Promise<void> {
+   const products  = await this.getProductNames();
+    const sortedProducts = [...products].sort((a, b) => a.localeCompare(b));
     expect(products).toEqual(sortedProducts);
   }
 
-  public async selectdescSortOption(): Promise<void> {
-    let products = await this.productNames().allTextContents();
-    let sortedProducts = [...products].sort((a, b) => b.localeCompare(a));
+  public async verifyProductsSortedByNameDescending(): Promise<void> {
+    const products = await this.getProductNames();
+    const sortedProducts = [...products].sort((a, b) => b.localeCompare(a));
     expect(products).toEqual(sortedProducts);
   }
 
-  public async selectlowtohighSortOption(): Promise<void> {
-    let productPrices = await this.productPrices().allTextContents();
-    let Prices = productPrices.map((price) => Number(price.replace("$", "")));
-    let sortedPrices = [...Prices].sort((a, b) => a - b);
+  public async verifyProductsSortedByPriceAscending(): Promise<void> {
+    const Prices = await this.getProductPrices();
+    const sortedPrices = [...Prices].sort((a, b) => a - b);
     expect(Prices).toEqual(sortedPrices);
   }
 
-  public async selecthightolowSortOption(): Promise<void> {
-    let productPrices = await this.productPrices().allTextContents();
-    let Prices = productPrices.map((price) => Number(price.replace("$", "")));
-    let sortedPrices = [...Prices].sort((a, b) => b - a);
+  public async verifyProductsSortedByPriceDescending(): Promise<void> {
+    const Prices = await this.getProductPrices();
+    const sortedPrices = [...Prices].sort((a, b) => b - a);
     expect(Prices).toEqual(sortedPrices);
   }
 

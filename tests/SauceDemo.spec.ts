@@ -1,6 +1,7 @@
 import { test } from "../fixtures/fixtures";
 import { sauceDemoData } from "../test-data/saucedemoData";
 import { env } from "../config/environment";
+import { SORT_OPTIONS } from "../pages/SauceProductPage";
 
 test("Task 5 - SauceDemo Shopping ", async ({
   sauceDemoLoginPage,
@@ -9,11 +10,7 @@ test("Task 5 - SauceDemo Shopping ", async ({
   sauceDemoCheckOutPage,
 }) => {
 
-  const selectedProducts: string[] = [
-    "Sauce Labs Backpack",
-    "Sauce Labs Bike Light",
-    "Sauce Labs Onesie",
-  ];
+  let selectedProducts: string[] = [];
 
   await test.step("Login using valid credentials", async () => {
     await sauceDemoLoginPage.navigate(env.sauceDemoUrl);
@@ -29,27 +26,27 @@ test("Task 5 - SauceDemo Shopping ", async ({
   });
 
   await test.step("Sort products in ascending order", async () => {
-    await sauceDemoProductsPage.selectsortOption("az");
-    await sauceDemoProductsPage.selectascSortOption();
+    await sauceDemoProductsPage.selectsortOption(SORT_OPTIONS.NAME_ASCENDING);
+    await sauceDemoProductsPage.verifyProductsSortedByNameAscending();
   });
 
   await test.step("Sort products in descending order", async () => {
-    await sauceDemoProductsPage.selectsortOption("za");
-    await sauceDemoProductsPage.selectdescSortOption();
+    await sauceDemoProductsPage.selectsortOption(SORT_OPTIONS.NAME_DESCENDING);
+    await sauceDemoProductsPage.verifyProductsSortedByNameDescending();
   });
 
   await test.step("Sort products from low to high", async () => {
-    await sauceDemoProductsPage.selectsortOption("lohi");
-    await sauceDemoProductsPage.selectlowtohighSortOption();
+    await sauceDemoProductsPage.selectsortOption(SORT_OPTIONS.PRICE_LOW_TO_HIGH);
+    await sauceDemoProductsPage.verifyProductsSortedByPriceAscending();
   });
 
   await test.step("Sort products from high to low", async () => {
-    await sauceDemoProductsPage.selectsortOption("hilo");
-    await sauceDemoProductsPage.selecthightolowSortOption();
+    await sauceDemoProductsPage.selectsortOption(SORT_OPTIONS.PRICE_HIGH_TO_LOW);
+    await sauceDemoProductsPage.verifyProductsSortedByPriceDescending();
   });
 
   await test.step("Add products to cart", async () => {
-
+    selectedProducts = (await sauceDemoProductsPage.getProductNames()).slice(0, 3);
     for (const product of selectedProducts) {
       await sauceDemoProductsPage.addProductToCart(product);
     }
