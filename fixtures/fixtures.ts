@@ -8,6 +8,11 @@ import { SauceDemoLoginPage } from "../pages/SauceLoginPage";
 import { SauceDemoProductsPage } from "../pages/SauceProductPage";
 import { SauceDemoCartPage } from "../pages/SauceCartPage";
 import { SauceDemoCheckOutPage } from "../pages/SauceCheckOutPage";
+import { OrangeLoginPage } from "../pages/OrangeLoginPage";
+import { OrangePimPage } from "../pages/OrangePimPage";
+import { OrangeAddEmployeePage } from "../pages/OrangeAddEmployeePage";
+import { OrangeEmpDetailsPage } from "../pages/OrangeEmpDetailsPage";
+import { OrangeAdminPage } from "../pages/OrangeAdminPage";
 
 type PageFixtures = {
   signupPage: SignupPage;
@@ -18,6 +23,11 @@ type PageFixtures = {
   sauceDemoProductsPage: SauceDemoProductsPage;
   sauceDemoCartPage: SauceDemoCartPage;
   sauceDemoCheckOutPage: SauceDemoCheckOutPage;
+  orangeLoginPage: OrangeLoginPage;
+  orangePimPage: OrangePimPage;
+  orangeAddEmployeePage: OrangeAddEmployeePage;
+  orangeEmpDetailsPage: OrangeEmpDetailsPage;
+  orangeAdminPAge: OrangeAdminPage;
 };
 
 export const test = base.extend<PageFixtures>({
@@ -69,8 +79,37 @@ export const test = base.extend<PageFixtures>({
     const sauceDemoCheckOutPage = new SauceDemoCheckOutPage(page);
 
     await use(sauceDemoCheckOutPage);
-  }
+  },
 
+  orangeLoginPage: async ({ page }, use) => {
+    const orangeLoginPage = new OrangeLoginPage(page);
+
+    await use(orangeLoginPage);
+  },
+
+  orangePimPage: async ({ page }, use) => {
+    const orangePimPage = new OrangePimPage(page);
+
+    await use(orangePimPage);
+  },
+
+  orangeAddEmployeePage: async ({ page }, use) => {
+    const orangeAddEmployeePage = new OrangeAddEmployeePage(page);
+
+    await use(orangeAddEmployeePage); 
+  },
+
+  orangeEmpDetailsPage: async ({ page }, use) => {
+    const orangeEmpDetailsPage = new OrangeEmpDetailsPage(page);
+
+    await use(orangeEmpDetailsPage);  
+  },
+
+  orangeAdminPAge: async({page}, use) => {
+    const orangeAdminPage = new OrangeAdminPage(page);
+
+    await use(orangeAdminPage);
+  }
 
   });
 
