@@ -1,5 +1,5 @@
 import { BasePage } from "./BasePage";
-
+import {logger} from "../utils/logger";
 
 
 export class OrangeAdminPage extends BasePage {
@@ -86,6 +86,7 @@ export class OrangeAdminPage extends BasePage {
         await this.fillConfirmPassword(confirmPasswordValue);
         await this.clickSaveButton();
         await this.isElementVisible(this.systemUsersHeading(), "System User Heading");
+        logger.info("New Admin User has been created successfully");
     }
 
     public async validateNewAdminUser(userNameValue: string): Promise<void> {
@@ -103,6 +104,7 @@ export class OrangeAdminPage extends BasePage {
         await this.click(this.deleteButton(),"Delete Button");
         await this.click(this.yesDeleteButton(),"Yes, delete Button");
         await this.isElementVisible(this.noRecordsFoundText(),"No records Found");
+        logger.info("System User has been deleted successfully");
     }
 
 

@@ -6,18 +6,15 @@ export class BasePage {
 
 async click (locator:Locator, name:string) : Promise<void>{
     await locator.click();
-    logger.info(`clicking ${name}`)
 }
 
 async isElementVisible(locator:Locator, name:string) : Promise<void>{
     await expect(locator).toBeVisible({timeout:120000});
-    logger.info(`${name} is Visible`)
 
 }
 
 async fill(locator:Locator,value:string, name:string) : Promise<void>{
     await locator.fill(value);
-    logger.info(`Filling ${name}`)
 }
 
 async reloadpage(){

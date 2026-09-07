@@ -1,16 +1,25 @@
-export const env = {
-    baseurl : "https://automationexercise.com",
-    sauceDemoUrl: "https://www.saucedemo.com/",
-    orangehrm: {
-        dev: {
-            url: "https://opensource-demo.orangehrmlive.com/",
-            username: "Admin"
-        },
+import dotenv from "dotenv";
 
-        qa: {
-            url: "https://orangehrm-demo.orangehrmlive.com/",
-            username: "Admin"
-        }
+export function loadEnvironment(): string {
+
+    const environment = process.env.ENV?.trim().toLowerCase();
+
+    if (!environment) {
+        throw new Error(
+            "ENV is missing. Please provide ENV=dev or ENV=qa."
+        );
     }
 
+    if (!["dev", "qa"].includes(environment)) {
+        throw new Error(
+            `Invalid environment "${environment}". ` +
+            "Supported environments are: dev, qa."
+        );
+    }
+
+    dotenv.config({
+        path: `config/${environment}.env`
+    });
+
+    return environment;
 }

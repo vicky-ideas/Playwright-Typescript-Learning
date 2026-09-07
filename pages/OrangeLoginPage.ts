@@ -20,17 +20,14 @@ export class OrangeLoginPage extends BasePage {
 
     public async enterUsername(username: string): Promise<void> {
         await this.usernameInput().fill(username);
-        logger.info("Entered username");
     }
 
     public async enterPassword(password: string): Promise<void> {
         await this.passwordInput().fill(password);
-        logger.info("Entered password");
     }
 
     public async clickLoginButton(): Promise<void> {
         await this.loginButton().click();
-        logger.info("Clicked on login button");
     }
 
     public async clickUserProfilemenu(): Promise<void> {

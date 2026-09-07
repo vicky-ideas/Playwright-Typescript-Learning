@@ -24,7 +24,7 @@ export class OrangeEmpDetailsPage extends BasePage {
     }
 
     public async getEmployeeID(): Promise<string> {
-        const empID = await this.empIDvalue();
+        const empID = this.empIDvalue();
         return await empID.inputValue();
     }
 
@@ -34,7 +34,6 @@ export class OrangeEmpDetailsPage extends BasePage {
 
     public async fillGender(gendervalue: string): Promise<void> {
         await this.genderCheck(gendervalue).click();
-        logger.info("Checking Gender Value")
     }
 
     public async fillLicenseNumber(LicenseNumberValue: string): Promise<void> {
@@ -61,6 +60,7 @@ export class OrangeEmpDetailsPage extends BasePage {
         await this.fillLicenseNumber(LicenseNumberValue);
         await this.fillGender(gendervalue);
         await this.clickSaveButton();
+        logger.info("Employee Details Updated Successfully");
     }
 
     public async validateUpdatedDetails(maritalStatusValue: string,nationalityValue: string): Promise<void> {

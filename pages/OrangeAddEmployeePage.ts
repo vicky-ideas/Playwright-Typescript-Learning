@@ -1,5 +1,4 @@
 import { BasePage } from "./BasePage";
-import { logger } from "../utils/logger";
 
 
 
@@ -9,7 +8,6 @@ export class OrangeAddEmployeePage extends BasePage {
     private readonly firstNameInput = () => this.page.getByRole("textbox", { name: "First Name" });
     private readonly middleNameInput = () => this.page.getByRole("textbox", { name: "Middle Name" });
     private readonly lastNameInput = () => this.page.getByRole("textbox", { name: "Last Name" });
-    //private readonly employeeIdInput = () => this.page.getByLabel("label", { name: "Employee Id" });
     private readonly employeeIdInput = () => this.page.locator('.oxd-input-group').filter({
     has: this.page.getByText('Employee Id', { exact: true }),
     }).getByRole('textbox');
@@ -29,12 +27,10 @@ export class OrangeAddEmployeePage extends BasePage {
     public async uploadProfilePicture(filePath: string): Promise<void> {
         const fileInput = this.page.locator('input[class="oxd-file-input"]');
         await fileInput.setInputFiles(filePath);
-        logger.info("Uploaded profile picture");
     }
 
     public async submitEmployeeForm(): Promise<void> {
         await this.saveButton().click();
-        logger.info("Submitted the add employee form");
     }
 
     public async getEmpId(): Promise<string> {

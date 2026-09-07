@@ -1,6 +1,7 @@
 import { test } from "../fixtures/fixtures";
 import { orangeHrmData} from "../test-data/orangeHrmData";
 import { getOrangeHrmConfig } from "../config/orangeHRMConfig";
+import { logger } from "../utils/logger";
 
 test ( "Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage, orangeAddEmployeePage, orangeEmpDetailsPage, orangeAdminPAge }) => {
 
@@ -36,6 +37,7 @@ test ( "Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage,
         await orangeAddEmployeePage.uploadProfilePicture(orangeHrmData.profilePicPath);
         await orangeAddEmployeePage.submitEmployeeForm();
         await orangeEmpDetailsPage.verifyEmpDetailsPageDisplayed();
+        logger.info("Employee created successfully");
     })
 
     await test.step("Navigate to the Employee List", async () =>{
@@ -60,14 +62,14 @@ test ( "Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage,
     })
     
     await test.step("Add new admin system user and validate the new user", async() => {
-        await orangeAdminPAge.addNewSystemUser(orangeHrmData.adminUserRole,firstName,orangeHrmData.adminStatus,firstName,orangeHrmData.password,orangeHrmData.password);
+        await orangeAdminPAge.addNewSystemUser(orangeHrmData.adminUserRole,firstName,orangeHrmData.adminStatus,firstName,config.password,config.password);
         await orangeAdminPAge.validateNewAdminUser(firstName);
     })
 
     await test.step("Validate new user login and logout", async () => {
         await orangeLoginPage.logoutUser();
         await orangeLoginPage.verifyLoginPageDisplayed();
-        await orangeLoginPage.logintoOrangeHRM(firstName,orangeHrmData.password);
+        await orangeLoginPage.logintoOrangeHRM(firstName,config.password);
         await orangeLoginPage.verifySuccessfulLogin();
         await orangeLoginPage.logoutUser();
     })

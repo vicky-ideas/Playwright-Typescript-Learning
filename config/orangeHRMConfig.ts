@@ -1,4 +1,4 @@
-import { env } from "./environment";
+import { loadEnvironment } from "./environment";
 
 export interface OrangeHrmConfig {
     environment: string;
@@ -9,45 +9,24 @@ export interface OrangeHrmConfig {
 
 export function getOrangeHrmConfig(): OrangeHrmConfig {
 
-    const environment = process.env.ENV?.trim().toLowerCase();
+    const environment = loadEnvironment();
 
-    // Validate ENV
-    if (!environment) {
-        throw new Error(
-            "ENV is missing. Please provide ENV=dev or ENV=qa."
-        );
-    }
+    const url = process.env.ORANGEHRM_URL;
+    const username = process.env.ORANGEHRM_USERNAME;
+    const password = process.env.ORANGEHRM_PASSWORD;
 
-    // Get selected environment configuration
-    const environmentConfig =
-        env.orangehrm[
-            environment as keyof typeof env.orangehrm
-        ];
 
-    // Validate environment
-    if (!environmentConfig) {
-        throw new Error(
-            `Invalid environment "${environment}". ` +
-            "Supported environments are: dev, qa."
-        );
-    }
-
-    // Validate URL
-    if (!environmentConfig.url) {
+    if (!url) {
         throw new Error(
             `OrangeHRM URL is missing for environment "${environment}".`
         );
     }
 
-    // Validate username
-    if (!environmentConfig.username) {
+    if (!username) {
         throw new Error(
             `OrangeHRM username is missing for environment "${environment}".`
         );
     }
-
-    // Password ONLY from runtime
-    const password = process.env.ORANGEHRM_PASSWORD;
 
     if (!password) {
         throw new Error(
@@ -58,8 +37,8 @@ export function getOrangeHrmConfig(): OrangeHrmConfig {
 
     return {
         environment,
-        url: environmentConfig.url,
-        username: environmentConfig.username,
+        url,
+        username,
         password
     };
 }

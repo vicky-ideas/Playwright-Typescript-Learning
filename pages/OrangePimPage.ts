@@ -19,7 +19,6 @@ export class OrangePimPage extends BasePage {
 
     public async clickPimMenu(): Promise<void> {
         await this.pimMenu().click();
-        logger.info("Clicked on PIM menu");
     }
 
     public async verifyPimPageDisplayed(): Promise<void> {
@@ -28,7 +27,6 @@ export class OrangePimPage extends BasePage {
 
     public async clickAddEmployeeButton(): Promise<void> {
         await this.addEmployeeButton().click();
-        logger.info("Clicked on Add Employee button");
     }
 
     public async verifyEmployeeInformationHeadingDisplayed(): Promise<void> {
@@ -67,6 +65,7 @@ export class OrangePimPage extends BasePage {
         await this.clickDeleteButton();
         await this.clickYesDelete();
         await this.isElementVisible(this.noRecordsFoundText(),"No Records Found");
+        logger.info("Newly Created Employee has been deleted successfully");
     }
 
 }
