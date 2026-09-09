@@ -6,7 +6,11 @@ export const orangeHrmData = {
     driversLicenseNumber: "123213434343",
     maritalStatus: "Single",
     adminUserRole:"Admin",
+    essUserRole: "ESS",
     adminStatus: "Enabled",
+    leaveType: "CAN - Vacation",
+    leaveComment: "Vacation Leave",
+    entitlementValue: "10",
     profilePicPath:path.resolve(__dirname, "../test-data/ProfilePicture.jpg"),
     generateUniqueEmployeeId: function() {
         const timestamp = Date.now().toString().slice(-6);

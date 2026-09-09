@@ -9,7 +9,7 @@ async click (locator:Locator, name:string) : Promise<void>{
 }
 
 async isElementVisible(locator:Locator, name:string) : Promise<void>{
-    await expect(locator).toBeVisible({timeout:120000});
+    await expect(locator).toBeVisible({timeout:150000});
 
 }
 

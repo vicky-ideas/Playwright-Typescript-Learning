@@ -13,6 +13,7 @@ import { OrangePimPage } from "../pages/OrangePimPage";
 import { OrangeAddEmployeePage } from "../pages/OrangeAddEmployeePage";
 import { OrangeEmpDetailsPage } from "../pages/OrangeEmpDetailsPage";
 import { OrangeAdminPage } from "../pages/OrangeAdminPage";
+import {OrangeLeavePage} from "../pages/OrangeLeavePage";
 
 type PageFixtures = {
   signupPage: SignupPage;
@@ -28,6 +29,7 @@ type PageFixtures = {
   orangeAddEmployeePage: OrangeAddEmployeePage;
   orangeEmpDetailsPage: OrangeEmpDetailsPage;
   orangeAdminPAge: OrangeAdminPage;
+  orangeLeavePage: OrangeLeavePage;
 };
 
 export const test = base.extend<PageFixtures>({
@@ -109,6 +111,12 @@ export const test = base.extend<PageFixtures>({
     const orangeAdminPage = new OrangeAdminPage(page);
 
     await use(orangeAdminPage);
+  },
+
+  orangeLeavePage: async({page}, use) => {
+    const orangeLeavePage = new OrangeLeavePage(page);
+
+    await use(orangeLeavePage);
   }
 
   });
