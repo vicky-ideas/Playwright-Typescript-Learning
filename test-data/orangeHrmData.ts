@@ -8,7 +8,7 @@ export const orangeHrmData = {
     adminUserRole:"Admin",
     essUserRole: "ESS",
     adminStatus: "Enabled",
-    leaveType: "CAN - Vacation",
+    //leaveType: "CAN - Vacation",
     leaveComment: "Vacation Leave",
     entitlementValue: "10",
     profilePicPath:path.resolve(__dirname, "../test-data/ProfilePicture.jpg"),

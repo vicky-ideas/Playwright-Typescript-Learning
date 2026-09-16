@@ -59,6 +59,7 @@ export class OrangeLoginPage extends BasePage {
     public async logoutUser(): Promise<void> {
         await this.clickUserProfilemenu();
         await this.clickLogout();
+        await this.verifyLoginPageDisplayed();
     }
 
 }

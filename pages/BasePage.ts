@@ -28,5 +28,9 @@ async verifyValidationMessage(locator:Locator, name:string, expectedMessage:stri
     expect(actualMessage).toBe(expectedMessage)
     logger.info(`Verifying ${name}`)
 }
+
+async isPageClosed(): Promise<boolean> {
+       return this.page.isClosed();
+  }
     
 }
