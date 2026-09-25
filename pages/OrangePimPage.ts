@@ -37,7 +37,7 @@ export class OrangePimPage extends BasePage {
         await this.fill(this.employeeIdSearchField(), empID, "EmployeeID search field")
     }
 
-    public async clickSearcButton(): Promise<void> {
+    public async clickSearchButton(): Promise<void> {
         await this.click(this.searchButton(), "Search Button")
     }
 
@@ -59,7 +59,7 @@ export class OrangePimPage extends BasePage {
 
     public async deleteEmployee(empID:string, firstName: string): Promise<void> {
         await this.enterEmployeeID(empID);
-        await this.clickSearcButton();
+        await this.clickSearchButton();
         await this.verifySearchResult(firstName);
         await this.isElementVisible(this.firstNameSearchResult(firstName),"First Name search Result");
         await this.clickDeleteButton();

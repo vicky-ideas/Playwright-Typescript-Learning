@@ -4,7 +4,7 @@ import {logger} from "../utils/logger";
 
 export class OrangeAdminPage extends BasePage {
 
-    private readonly adminmenu = () => this.page.getByRole("link", { name: "Admin" });
+    private readonly adminMenu = () => this.page.getByRole("link", { name: "Admin" });
     private readonly systemUsersHeading = () => this.page.getByRole("heading", {name: "System Users"});
     private readonly searchButton = () => this.page.getByRole("button",{name: " Search "});
     private readonly addUserButton = () => this.page.getByRole("button", { name: " Add " });
@@ -23,11 +23,13 @@ export class OrangeAdminPage extends BasePage {
     private readonly deleteButton = () => this.page.locator('[class="oxd-icon bi-trash"]');
     private readonly yesDeleteButton = () => this.page.getByRole("button",{name:' Yes, Delete'});
     private readonly noRecordsFoundText = () => this.page.locator("//span[text()='No Records Found']");
+    private readonly systemUserRow = (username: string) =>  this.page.locator(".oxd-table-body .oxd-table-row").filter({ hasText: username });
+    private readonly deleteUserButton = (username: string) => this.systemUserRow(username).locator(".oxd-table-cell-actions").locator("button").filter({ has: this.page.locator(".bi-trash") });
 
 
 
     public async clickAdminMenu(): Promise<void> {
-        await this.click(this.adminmenu(), "Admin Menu")
+        await this.click(this.adminMenu(), "Admin Menu")
     }
 
     public async validateSystemUsersHeading(): Promise<void> {
@@ -100,8 +102,8 @@ export class OrangeAdminPage extends BasePage {
         await this.validateSystemUsersHeading();
         await this.fill(this.userNameInput(),userNameValue, "User Name Field");
         await this.click(this.searchButton(), "Search button");
-        await this.isElementVisible(this.usernameSearchResult(userNameValue),"Username Search Result");
-        await this.click(this.deleteButton(),"Delete Button");
+        await this.isElementVisible(this.systemUserRow(userNameValue),"Username Search Result");
+        await this.click(this.deleteUserButton(userNameValue),"Delete Button");
         await this.click(this.yesDeleteButton(),"Yes, delete Button");
         await this.isElementVisible(this.noRecordsFoundText(),"No records Found");
         logger.info("System User has been deleted successfully");

@@ -11,6 +11,7 @@ export class OrangeLoginPage extends BasePage {
     private readonly dashboardElement = () => this.page.getByRole("heading", { name: "Dashboard" });
     private readonly userprofileMenu = () => this.page.locator('.oxd-userdropdown');
     private readonly logout = () => this.page.getByRole("menuitem",{name:"Logout"});
+    private readonly dashboardMenu = () => this.page.getByRole("link", { name: "Dashboard" });
 
 
     public async navigate(url: string): Promise<void> {
@@ -45,11 +46,11 @@ export class OrangeLoginPage extends BasePage {
         logger.info("Verified that the login page is displayed");
     }
 
-    public async logintoOrangeHRM(username: string, password: string): Promise<void> {
+    public async loginToOrangeHRM(username: string, password: string): Promise<void> {
         await this.enterUsername(username);
         await this.enterPassword(password);
         await this.clickLoginButton();
-        logger.info(`Logged in with username: ${username}`);
+        logger.info(`Logged in to the application`);
     }
 
     public async verifySuccessfulLogin(): Promise<void> {
@@ -60,6 +61,10 @@ export class OrangeLoginPage extends BasePage {
         await this.clickUserProfilemenu();
         await this.clickLogout();
         await this.verifyLoginPageDisplayed();
+    }
+
+    public async goToDashboard(): Promise<void> {
+        await this.click(this.dashboardMenu(),"Dashboard Menu")
     }
 
 }

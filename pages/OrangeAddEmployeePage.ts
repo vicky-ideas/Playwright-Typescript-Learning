@@ -1,5 +1,11 @@
 import { BasePage } from "./BasePage";
 
+type EmployeeData = {
+        firstName: string;
+        middleName: string;
+        lastName: string;
+        employeeId: string;
+    };
 
 
 export class OrangeAddEmployeePage extends BasePage {
@@ -17,11 +23,11 @@ export class OrangeAddEmployeePage extends BasePage {
         await this.isElementVisible(this.addEmployeeHeading(), "Add Employee");
     }
 
-    public async fillEmployeeDetails(firstName: string, middleName: string, lastName: string, EmployeeID: string): Promise<void> {
-        await this.fill(this.firstNameInput(), firstName, "First Name");
-        await this.fill(this.middleNameInput(), middleName, "Middle Name");
-        await this.fill(this.lastNameInput(), lastName, "Last Name");
-        await this.fill(this.employeeIdInput(), EmployeeID, "Employee ID");
+    public async fillEmployeeDetails(employeeData: EmployeeData): Promise<void> {
+        await this.fill(this.firstNameInput(), employeeData.firstName, "First Name");
+        await this.fill(this.middleNameInput(), employeeData.middleName, "Middle Name");
+        await this.fill(this.lastNameInput(), employeeData.lastName, "Last Name");
+        await this.fill(this.employeeIdInput(), employeeData.employeeId, "Employee ID");
     }
 
     public async uploadProfilePicture(filePath: string): Promise<void> {

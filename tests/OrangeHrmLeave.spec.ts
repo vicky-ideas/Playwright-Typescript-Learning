@@ -4,10 +4,12 @@ import { getOrangeHrmConfig } from "../config/orangeHRMConfig";
 import { logger } from "../utils/logger";
 import { getFutureDate } from "../utils/futureDate";
 
-test("Task 7 & 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orangePimPage, orangeAddEmployeePage, orangeEmpDetailsPage, orangeAdminPAge, orangeLeavePage, basePage }) => {
+test("Task 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orangePimPage, orangeAddEmployeePage, orangeEmpDetailsPage, orangeAdminPage, orangeLeavePage, basePage }) => {
 
-    let empID: string = "";
-    let firstName: string = "";
+    let employeeID: string = "";
+    let employeeName: string = "";
+    let essUserName: string = "";
+    let essPassword: string = "";
     let employeeCreated = false;
     let systemUserCreated = false;
     let leaveType: string = "";
@@ -22,7 +24,7 @@ test("Task 7 & 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, o
         })
 
         await test.step("Login using valid credentials and validate successful login", async () => {
-            await orangeLoginPage.logintoOrangeHRM(config.username, config.password);
+            await orangeLoginPage.loginToOrangeHRM(config.username, config.password);
             await orangeLoginPage.verifySuccessfulLogin();
         })
 
@@ -37,10 +39,10 @@ test("Task 7 & 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, o
         })
 
         await test.step("Fill in the employee details and submit the form", async () => {
-            const employeeDetails = orangeHrmData.generateUniqueEmployeeId();
-            firstName = employeeDetails.LastName;
-            await orangeAddEmployeePage.fillEmployeeDetails(employeeDetails.FirstName, employeeDetails.MiddleName, employeeDetails.LastName, employeeDetails.EmployeeId);
-            empID = await orangeEmpDetailsPage.getEmployeeID();
+            const employeeDetails = orangeHrmData.generateUniqueEmployeeData();
+            employeeName = employeeDetails.lastName;
+            await orangeAddEmployeePage.fillEmployeeDetails(employeeDetails);
+            employeeID = await orangeEmpDetailsPage.getEmployeeID();
             await orangeAddEmployeePage.uploadProfilePicture(orangeHrmData.profilePicPath);
             await orangeAddEmployeePage.submitEmployeeForm();
             await orangeEmpDetailsPage.verifyEmpDetailsPageDisplayed();
@@ -54,35 +56,74 @@ test("Task 7 & 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, o
         })
 
         await test.step("Search and validate with employee ID", async () => {
-            await orangePimPage.enterEmployeeID(empID);
-            await orangePimPage.clickSearcButton();
-            await orangePimPage.verifySearchResult(firstName);
+            await orangePimPage.enterEmployeeID(employeeID);
+            await orangePimPage.clickSearchButton();
+            await orangePimPage.verifySearchResult(employeeName);
         })
 
-        await test.step("Create and validate new admin system user and logout the admin user", async () => {
-            await orangeAdminPAge.addNewSystemUser(orangeHrmData.essUserRole, firstName, orangeHrmData.adminStatus, firstName, config.password, config.password);
+        await test.step("Create a ESS user", async () => {
+            const essCredentials = orangeHrmData.generateUniqueEssCredentials();
+            essUserName = essCredentials.essUserName;
+            essPassword = essCredentials.essPassword;
+            await orangeAdminPage.addNewSystemUser(orangeHrmData.essUserRole, employeeName, orangeHrmData.adminStatus, essUserName, essPassword, essPassword);
             systemUserCreated = true;
-            await orangeAdminPAge.validateNewAdminUser(firstName);
-            leaveType = await orangeLeavePage.addEntitlement(firstName, orangeHrmData.entitlementValue);
+        })
+
+        await test.step("Validate new ESS user", async () => {
+            await orangeAdminPage.validateNewAdminUser(essUserName);
+        })
+
+        await test.step("Add Entitlement for the Employee", async () => {
+            await orangeLeavePage.clickLeaveMenu();
+            await orangeLeavePage.clickEntitlementMenu();
+            await orangeLeavePage.clickAddEntitlementsMenu();
+            await orangeLeavePage.enterEntitlementEmployee(employeeName);
+            leaveType = await orangeLeavePage.selectEntitlementLeaveType();
+            await orangeLeavePage.enterEntitlement(orangeHrmData.entitlementValue);
+            await orangeLeavePage.saveEntitlement();
+            logger.info("Entitlement Saved Successfully");
             await orangeLoginPage.logoutUser();
         })
 
-        await test.step("Validate new user login and apply leave for a future date", async () => {
-            await orangeLoginPage.logintoOrangeHRM(firstName, config.password);
+        await test.step("Login as the new ESS user", async () => {
+            await orangeLoginPage.loginToOrangeHRM(essUserName, essPassword);
+            await orangeLoginPage.goToDashboard();
             await orangeLoginPage.verifySuccessfulLogin();
-            const fromDate = getFutureDate(7);
-            await orangeLeavePage.applyLeave(leaveType, fromDate, orangeHrmData.leaveComment);
-            await orangeLeavePage.validateLeaveRequest(firstName, leaveType);
+        })
+
+        await test.step("Apply leave for a future date and logout the new ESS user", async () => {
+            const fromDate = getFutureDate(4);
+            await orangeLeavePage.clickLeaveMenu();
+            await orangeLeavePage.clickApplyMenu();
+            await orangeLeavePage.verifyApplyLeavePageDisplayed();
+            await orangeLeavePage.selectLeaveType(leaveType);
+            await orangeLeavePage.fillFromDate(fromDate);
+            await orangeLeavePage.fillComment(orangeHrmData.leaveComment);
+            await orangeLeavePage.clickApplyButton();
+            await orangeLeavePage.verifyToastMessage(orangeHrmData.successfullToastMessage);
+            await orangeLeavePage.validateLeaveRequest(employeeName, leaveType, "Pending");
             await orangeLoginPage.logoutUser();
+        })
+
+        await test.step("Login as admin and navigate to leave page", async () => {
+            await orangeLoginPage.loginToOrangeHRM(config.username, config.password);
+            await orangeLeavePage.clickLeaveMenu();
         })
 
         await test.step("Validate and approve leave request by admin login", async () => {
-            await orangeLoginPage.logintoOrangeHRM(config.username, config.password);
-            await orangeLeavePage.clickLeaveMenu();
-            await orangeLeavePage.validateAssignedLeaveRequest(firstName, leaveType);
+            await orangeLeavePage.validateAssignedLeaveRequest(employeeName, leaveType);
             await orangeLeavePage.approveLeaveRequest();
             logger.info("Leave request approved successfully");
             await orangeLoginPage.logoutUser();
+        })
+
+        await test.step("Login as the new ESS user", async () => {
+            await orangeLoginPage.loginToOrangeHRM(essUserName, essPassword);
+            await orangeLeavePage.clickLeaveMenu();
+        })
+
+        await test.step("Validate approved leave status", async () => {
+            await orangeLeavePage.validateLeaveRequest(employeeName, leaveType, "Scheduled");
         })
 
     } catch (error) {
@@ -92,45 +133,36 @@ test("Task 7 & 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, o
         try {
             if (!employeeCreated && !systemUserCreated) {
                 logger.info("No test data was created. Cleanup not required.");
-                return;
-            }
-            if (await basePage.isPageClosed()) {
+            } else if (await basePage.isPageClosed()) {
                 logger.error(
                     "Cleanup cannot be performed because the Playwright page is already closed."
                 );
-                return;
-            }
+            } else {
+                await orangeLoginPage.logoutUser();
+                await orangeLoginPage.loginToOrangeHRM(config.username, config.password);
+                await orangeLoginPage.goToDashboard();
 
-            await orangeLoginPage.logintoOrangeHRM(
-                config.username,
-                config.password
-            );
-
-            if (systemUserCreated) {
-                await orangeAdminPAge.deleteAdminUser(firstName);
-                logger.info(`System user deleted: ${firstName}`);
-            }
-
-            if (employeeCreated) {
-                if (!empID) {
-                    throw new Error(
-                        "Cleanup cannot continue because Employee ID was not captured"
-                    );
+                if (systemUserCreated) {
+                    await orangeAdminPage.deleteAdminUser(essUserName);
+                    logger.info(`System user deleted: ${employeeName}`);
                 }
 
-                await orangePimPage.clickPimMenu();
+                if (employeeCreated) {
+                    if (!employeeID) {
+                        throw new Error(
+                            "Cleanup cannot continue because Employee ID was not captured"
+                        );
+                    }
 
-                await orangePimPage.deleteEmployee(
-                    empID,
-                    firstName
-                );
+                    await orangePimPage.clickPimMenu();
+                    await orangePimPage.deleteEmployee(employeeID, employeeName);
 
-                logger.info(`Employee deleted: ${firstName}`);
+                    logger.info(`Employee deleted: ${employeeName}`);
+                }
+
+                await orangeLoginPage.logoutUser();
+                logger.info("Cleanup completed successfully");
             }
-
-            await orangeLoginPage.logoutUser();
-
-            logger.info("Cleanup completed successfully");
 
         } catch (cleanupError) {
             logger.error(`Cleanup failed: ${cleanupError}`);

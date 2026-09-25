@@ -28,7 +28,7 @@ type PageFixtures = {
   orangePimPage: OrangePimPage;
   orangeAddEmployeePage: OrangeAddEmployeePage;
   orangeEmpDetailsPage: OrangeEmpDetailsPage;
-  orangeAdminPAge: OrangeAdminPage;
+  orangeAdminPage: OrangeAdminPage;
   orangeLeavePage: OrangeLeavePage;
 };
 
@@ -107,7 +107,7 @@ export const test = base.extend<PageFixtures>({
     await use(orangeEmpDetailsPage);  
   },
 
-  orangeAdminPAge: async({page}, use) => {
+  orangeAdminPage: async({page}, use) => {
     const orangeAdminPage = new OrangeAdminPage(page);
 
     await use(orangeAdminPage);
