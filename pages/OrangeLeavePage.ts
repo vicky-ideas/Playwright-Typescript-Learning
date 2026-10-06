@@ -17,7 +17,6 @@ export class OrangeLeavePage extends BasePage {
     private readonly commentInput = () => this.page.locator('.oxd-textarea');
     private readonly applyButton = () => this.page.getByRole("button", { name: " Apply " });
     private readonly leaveListHeading = () => this.page.getByRole("heading", { name: "Leave List" });
-    private readonly approveButton = () => this.page.getByRole("button", { name: " Approve " });
     private readonly entitlementMenu = () => this.page.getByText("Entitlements ", { exact: true });
     private readonly addEntitlementsMenu = () => this.page.getByRole("menuitem", { name: "Add Entitlements" });
     private readonly entitlementEmployeeNameInput = () => this.page.locator('.oxd-input-group').filter({ hasText: "Employee Name" }).locator('input');
@@ -28,6 +27,9 @@ export class OrangeLeavePage extends BasePage {
     private readonly toastMessage = (message: string) => this.page.locator(".oxd-toast").filter({ hasText: message });
     private readonly entitlementLeaveTypeDropdown = () => this.page.locator(".oxd-input-group").filter({ has: this.page.getByText("Leave Type", { exact: true }) }).locator(".oxd-select-text");
     private readonly leaveRequestRow = (employeeName: string, leaveType: string) => this.page.locator(".oxd-table-body").getByRole("row").filter({ has: this.page.getByRole("cell", { name: employeeName }) }).filter({ has: this.page.getByRole("cell", { name: leaveType }) });
+    private readonly employeeLeaveRequestApproveButton = (employeeName: string, leaveType: string) => this.leaveRequestRow(employeeName, leaveType).getByRole("button", { name: " Approve " });
+    private readonly showLeaveWithStatusDropdown = () => this.page.locator('.oxd-input-group').filter({ has: this.page.getByText("Show Leave with Status", { exact: true }) }).locator(".oxd-select-text");
+    private readonly showLeaveWithStatusOption = (status: string) => this.page.getByRole("listbox").getByRole("option", { name: status, exact: true });
 
 
     public async selectEntitlementLeaveType(): Promise<string> {
@@ -67,6 +69,14 @@ export class OrangeLeavePage extends BasePage {
         await this.click(this.leavemenu(), "Leave Menu")
     }
 
+    public async clickMyLeaveMenu(): Promise<void> {
+        await this.click(this.myLeaveMenu(), "My Leave Menu")
+    }
+
+    public async clickLeaveListMenu(): Promise<void> {
+        await this.click(this.leaveListMenu(), "Leave List Menu")
+    }
+
     public async clickApplyMenu(): Promise<void> {
         await this.click(this.applyMenu(), "Apply Menu")
     }
@@ -96,10 +106,6 @@ export class OrangeLeavePage extends BasePage {
         await this.isElementVisible(this.leaveListHeading(), "Leave List Heading")
     }
 
-    public async clickApproveButton(): Promise<void> {
-        await this.click(this.approveButton(), "Approve Button")
-    }
-
     public async clickEntitlementMenu(): Promise<void> {
         await this.click(this.entitlementMenu(), "Entitlement Menu")
     }
@@ -108,7 +114,7 @@ export class OrangeLeavePage extends BasePage {
         await this.click(this.addEntitlementsMenu(), "Add Entitlements Menu")
     }
 
-    public async enterEntitlementEmployee(employeeName: string): Promise<void>{
+    public async enterEntitlementEmployee(employeeName: string): Promise<void> {
         await this.fill(this.entitlementEmployeeNameInput(), employeeName, "Employee Name");
         await this.click(this.employeeNameSearchResult(employeeName), "Employee Name result");
     }
@@ -123,42 +129,39 @@ export class OrangeLeavePage extends BasePage {
     }
 
     public async verifyToastMessage(message: string): Promise<void> {
-        await this.isElementVisible(this.toastMessage("Successfully Saved"), "Leave Applied Toast Message");
-
+        await this.isElementVisible(this.toastMessage(message), "Leave Toast Message");
     }
 
-    public async validateLeaveRequest(employeeName: string, leaveType: string, expectedStatus: string): Promise<void> {
-        await this.click(this.myLeaveMenu(),"My Leave Menu");
-        await this.verifyLeaveListPageDisplayed();
-        const row = this.leaveRequestRow(employeeName,leaveType);
-        await this.isElementVisible(row,`Leave request for ${employeeName}`);
-        await this.isElementVisible(row.getByRole("cell",{name: employeeName}), `Employee Name ${employeeName}`);
-        await this.isElementVisible(row.getByRole("cell",{name: leaveType}), `Leave Type ${leaveType}`);
-        await this.isElementVisible(row.getByRole("cell",{name: expectedStatus}),`Leave Status ${expectedStatus}`)
-        logger.info("Leave request validated successfully");
-    }
-
-    public async validateAssignedLeaveRequest(employeeName: string, leaveType: string): Promise<void> {
-        await this.click(this.leaveListMenu(),"Leave List Menu");
-        await this.verifyLeaveListPageDisplayed();
-        await this.fill(this.employeeNameInput(), employeeName, "Employee Name");
-        await this.click(this.employeeNameSearchResult(employeeName), "Employee Name result");
+    public async clickSearchButton(): Promise<void> {
         await this.click(this.searchButton(), "Search Button");
-        const row = this.leaveRequestRow(employeeName,leaveType);
-        await this.isElementVisible(row,`Leave request for ${employeeName}`);
-        await this.isElementVisible(row.getByRole("cell",{name: employeeName}), `Employee Name ${employeeName}`);
-        await this.isElementVisible(row.getByRole("cell",{name: leaveType}), `Leave Type ${leaveType}`);
     }
 
-    public async approveLeaveRequest(): Promise<void> {
-        await this.clickApproveButton();
-        await this.isElementVisible(this.toastMessage("Successfully Updated"), "Leave Approved Toast Message");
+    public async clickApproveLeaveRequest(employeeName: string, leaveType: string): Promise<void> {
+        await this.click(this.employeeLeaveRequestApproveButton(employeeName, leaveType), "Approve Button for the Employee Leave Request");
     }
 
     public async searchLeaveRequest(employeeName: string): Promise<void> {
+        await this.clickLeaveListMenu();
+        await this.verifyLeaveListPageDisplayed();
         await this.fill(this.employeeNameInput(), employeeName, "Employee Name");
-        await this.click(this.searchButton(), "Search Button");
+        await this.click(this.employeeNameSearchResult(employeeName), "Employee Name result");
+        await this.clickSearchButton();
     }
-    
+
+    public async selectShowLeaveWithStatus(status: string): Promise<void> {
+        await this.click(this.showLeaveWithStatusDropdown(), "Show Leave with Status Dropdown");
+        await this.click(this.showLeaveWithStatusOption(status), `Show Leave with Status Option ${status}`);
+    }
+
+    public async verifyLeaveRequestStatus(employeeName: string, leaveType: string, expectedStatus: string): Promise<void> {
+        const row = this.leaveRequestRow(employeeName, leaveType);
+        await this.isElementVisible(row, `Leave request for ${employeeName}`);
+        await this.isElementVisible(row.getByRole("cell", { name: employeeName }), `Employee Name ${employeeName}`);
+        await this.isElementVisible(row.getByRole("cell", { name: leaveType }), `Leave Type ${leaveType}`);
+        await this.isElementVisible(row.getByRole("cell", { name: expectedStatus }), `Leave Status ${expectedStatus}`);
+        logger.info("Leave request validated successfully");
+
+    }
+
 
 }

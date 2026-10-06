@@ -1,12 +1,12 @@
 import { test } from "../fixtures/fixtures";
-import { orangeHrmData} from "../test-data/orangeHrmData";
+import { orangeHrmData } from "../test-data/orangeHrmData";
 import { getOrangeHrmConfig } from "../config/orangeHRMConfig";
 import { logger } from "../utils/logger";
 
-test ( "Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage, orangeAddEmployeePage, orangeEmpDetailsPage, orangeAdminPage }) => {
+test("Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage, orangeAddEmployeePage, orangeEmpDetailsPage, orangeAdminPage }) => {
 
-    let employeeID :  string;
-    let employeeName : string;
+    let employeeID: string;
+    let employeeName: string;
     const config = getOrangeHrmConfig();
 
     await test.step("Navigate to OrangeHRM Login Page", async () => {
@@ -35,12 +35,12 @@ test ( "Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage,
         await orangeAddEmployeePage.fillEmployeeDetails(employeeDetails);
         employeeID = await orangeEmpDetailsPage.getEmployeeID();
         await orangeAddEmployeePage.uploadProfilePicture(orangeHrmData.profilePicPath);
-        await orangeAddEmployeePage.submitEmployeeForm();
+        await orangeAddEmployeePage.clickSaveButton();
         await orangeEmpDetailsPage.verifyEmpDetailsPageDisplayed();
         logger.info("Employee created successfully");
     })
 
-    await test.step("Navigate to the Employee List", async () =>{
+    await test.step("Navigate to the Employee List", async () => {
         await orangeEmpDetailsPage.clickEmployeeList();
         await orangePimPage.verifyEmployeeInformationHeadingDisplayed();
     })
@@ -53,32 +53,44 @@ test ( "Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage,
         await orangeEmpDetailsPage.verifyEmpDetailsPageDisplayed();
     })
 
-    await test.step("Update Employee Details", async() => {
-        await orangeEmpDetailsPage.updateEmployeeDetails(orangeHrmData.nationality,orangeHrmData.maritalStatus,orangeHrmData.gender,orangeHrmData.driversLicenseNumber);
+    await test.step("Update Employee Details", async () => {
+        await orangeEmpDetailsPage.updateEmployeeDetails(orangeHrmData.nationality, orangeHrmData.maritalStatus, orangeHrmData.gender, orangeHrmData.driversLicenseNumber);
     })
 
-    await test.step("validate employee updated values", async() => {
+    await test.step("validate employee updated values", async () => {
         await orangeEmpDetailsPage.validateUpdatedDetails(orangeHrmData.maritalStatus, orangeHrmData.nationality)
     })
-    
-    await test.step("Add new admin system user and validate the new user", async() => {
-        await orangeAdminPage.addNewSystemUser(orangeHrmData.adminUserRole,employeeName,orangeHrmData.adminStatus,employeeName,config.password,config.password);
+
+    await test.step("Add new admin system user and validate the new user", async () => {
+        await orangeAdminPage.clickAdminMenu();
+        await orangeAdminPage.validateSystemUsersHeading();
+        await orangeAdminPage.clickAddUserButton();
+        await orangeAdminPage.validateAddUserHeading();
+        await orangeAdminPage.selectUserRole(orangeHrmData.adminUserRole);
+        await orangeAdminPage.fillEmployeeName(employeeName);
+        await orangeAdminPage.selectStatus(orangeHrmData.adminStatus);
+        await orangeAdminPage.fillUserName(employeeName);
+        await orangeAdminPage.fillPassword(config.password);
+        await orangeAdminPage.fillConfirmPassword(config.password);
+        await orangeAdminPage.clickSaveButton();
+        await orangeAdminPage.validateSystemUserHeading();
+        logger.info("New Admin User has been created successfully");
         await orangeAdminPage.validateNewAdminUser(employeeName);
     })
 
     await test.step("Validate new user login and logout", async () => {
         await orangeLoginPage.logoutUser();
         await orangeLoginPage.verifyLoginPageDisplayed();
-        await orangeLoginPage.loginToOrangeHRM(employeeName,config.password);
+        await orangeLoginPage.loginToOrangeHRM(employeeName, config.password);
         await orangeLoginPage.verifySuccessfulLogin();
         await orangeLoginPage.logoutUser();
     })
 
-    await test.step("Delete the newly created admin user and employee", async() => {
-        await orangeLoginPage.loginToOrangeHRM(config.username,config.password);
+    await test.step("Delete the newly created admin user and employee", async () => {
+        await orangeLoginPage.loginToOrangeHRM(config.username, config.password);
         await orangeAdminPage.deleteAdminUser(employeeName);
         await orangePimPage.clickPimMenu();
-        await orangePimPage.deleteEmployee(employeeID,employeeName);
+        await orangePimPage.deleteEmployee(employeeID, employeeName);
         await orangeLoginPage.logoutUser();
     })
 

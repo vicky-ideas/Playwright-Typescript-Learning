@@ -11,14 +11,14 @@ export class OrangePimPage extends BasePage {
     private readonly employeeInformationHeading = () => this.page.getByRole("heading", {name: "Employee Information"})
     private readonly employeeIdSearchField = () => this.page.locator('.oxd-input-group').filter({ hasText: 'Employee Id' }).locator('input')
     private readonly searchButton = () => this.page.getByRole("button", {name: "Search"})
-    private readonly firstNameSearchResult = (firstName: string) => this.page.getByRole("cell", {name: firstName})
+    private readonly employeeNameSearchResult = (employeeName: string) => this.page.getByRole("cell", {name: employeeName})
     private readonly editButton = () => this.page.locator('[class="oxd-icon bi-pencil-fill"]')
     private readonly deleteButton = () => this.page.locator('[class="oxd-icon bi-trash"]');
     private readonly yesDeleteButton = () => this.page.getByRole("button",{name:' Yes, Delete'});
     private readonly noRecordsFoundText = () => this.page.locator("//span[text()='No Records Found']");
 
     public async clickPimMenu(): Promise<void> {
-        await this.pimMenu().click();
+        await this.click(this.pimMenu(), "PIM Menu");
     }
 
     public async verifyPimPageDisplayed(): Promise<void> {
@@ -26,23 +26,23 @@ export class OrangePimPage extends BasePage {
     }
 
     public async clickAddEmployeeButton(): Promise<void> {
-        await this.addEmployeeButton().click();
+        await this.click(this.addEmployeeButton(), "Add Employee Button");
     }
 
     public async verifyEmployeeInformationHeadingDisplayed(): Promise<void> {
         await this.isElementVisible(this.employeeInformationHeading(),"Employee Information")
     }
 
-    public async enterEmployeeID (empID: string): Promise<void> {
-        await this.fill(this.employeeIdSearchField(), empID, "EmployeeID search field")
+    public async enterEmployeeID (employeeID: string): Promise<void> {
+        await this.fill(this.employeeIdSearchField(), employeeID, "EmployeeID search field")
     }
 
     public async clickSearchButton(): Promise<void> {
         await this.click(this.searchButton(), "Search Button")
     }
 
-    public async verifySearchResult(firstName: string): Promise<void> {
-        await this.isElementVisible(this.firstNameSearchResult(firstName), "First Name search Result")
+    public async verifySearchResult(employeeName: string): Promise<void> {
+        await this.isElementVisible(this.employeeNameSearchResult(employeeName), "Employee Name search Result")
     }
 
     public async clickEditButton() : Promise<void> {
@@ -57,11 +57,11 @@ export class OrangePimPage extends BasePage {
         await this.click(this.yesDeleteButton(), "Yes, Delete")
     }
 
-    public async deleteEmployee(empID:string, firstName: string): Promise<void> {
-        await this.enterEmployeeID(empID);
+    public async deleteEmployee(employeeID:string, employeeName: string): Promise<void> {
+        await this.enterEmployeeID(employeeID);
         await this.clickSearchButton();
-        await this.verifySearchResult(firstName);
-        await this.isElementVisible(this.firstNameSearchResult(firstName),"First Name search Result");
+        await this.verifySearchResult(employeeName);
+        await this.isElementVisible(this.employeeNameSearchResult(employeeName),"Employee Name search Result");
         await this.clickDeleteButton();
         await this.clickYesDelete();
         await this.isElementVisible(this.noRecordsFoundText(),"No Records Found");

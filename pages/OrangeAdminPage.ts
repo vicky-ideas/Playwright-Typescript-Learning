@@ -11,8 +11,8 @@ export class OrangeAdminPage extends BasePage {
     private readonly addUserHeading = () => this.page.getByRole("heading", {name: "Add User"});
     private readonly userRoleClick = () => this.page.locator('.oxd-input-group').filter({hasText:"User Role"}).getByText("-- Select --");
     private readonly userRoleValueSelect = (userRoleValue: string) => this.page.getByRole("listbox").getByText(userRoleValue, { exact: true });
-    private readonly EmployeeNameTextBox = () => this.page.getByPlaceholder("Type for hints...");
-    private readonly EmployeeNameSearchResult = (employeeName: string) => this.page.locator('.oxd-autocomplete-option').filter({ hasText: employeeName });
+    private readonly employeeNameTextBox = () => this.page.getByPlaceholder("Type for hints...");
+    private readonly employeeNameSearchResult = (employeeName: string) => this.page.locator('.oxd-autocomplete-option').filter({ hasText: employeeName });
     private readonly statusClick = () => this.page.locator('.oxd-input-group').filter({hasText:"Status"}).getByText("-- Select --");
     private readonly statusValueSelect = (statusValue: string) => this.page.getByRole("listbox").getByText(statusValue, { exact: true });
     private readonly userNameInput = () => this.page.locator('.oxd-input-group').filter({hasText: "Username"}).locator('input');
@@ -20,7 +20,6 @@ export class OrangeAdminPage extends BasePage {
     private readonly confirmPasswordInput = () => this.page.locator('.oxd-input-group').filter({hasText: /^Confirm Password$/}).locator('input');
     private readonly saveButton = () => this.page.getByRole("button", {name:" Save "});
     private readonly usernameSearchResult = (username: string) => this.page.getByRole("cell", {name: username, exact: true});
-    private readonly deleteButton = () => this.page.locator('[class="oxd-icon bi-trash"]');
     private readonly yesDeleteButton = () => this.page.getByRole("button",{name:' Yes, Delete'});
     private readonly noRecordsFoundText = () => this.page.locator("//span[text()='No Records Found']");
     private readonly systemUserRow = (username: string) =>  this.page.locator(".oxd-table-body .oxd-table-row").filter({ hasText: username });
@@ -50,8 +49,8 @@ export class OrangeAdminPage extends BasePage {
     }
 
     public async fillEmployeeName (employeeNameValue: string):Promise<void> {
-        await this.fill(this.EmployeeNameTextBox(),employeeNameValue,"Employee Name")
-        await this.click(this.EmployeeNameSearchResult(employeeNameValue),"Employee Name result")
+        await this.fill(this.employeeNameTextBox(),employeeNameValue,"Employee Name")
+        await this.click(this.employeeNameSearchResult(employeeNameValue),"Employee Name result")
     }
 
     public async selectStatus(statusValue: string): Promise<void> {
@@ -75,20 +74,8 @@ export class OrangeAdminPage extends BasePage {
         await this.click(this.saveButton(),"Save Button");
     }
 
-    public async addNewSystemUser(userRoleValue: string, employeeNameValue: string, statusValue: string, userNameValue: string, passwordValue: string, confirmPasswordValue: string): Promise<void> {
-        await this.clickAdminMenu();
-        await this.validateSystemUsersHeading();
-        await this.clickAddUserButton();
-        await this.validateAddUserHeading();
-        await this.selectUserRole(userRoleValue);
-        await this.fillEmployeeName(employeeNameValue);
-        await this.selectStatus(statusValue);
-        await this.fillUserName(userNameValue);
-        await this.fillPassword(passwordValue);
-        await this.fillConfirmPassword(confirmPasswordValue);
-        await this.clickSaveButton();
-        await this.isElementVisible(this.systemUsersHeading(), "System User Heading");
-        logger.info("New Admin User has been created successfully");
+    public async validateSystemUserHeading(): Promise<void> {
+        await this.isElementVisible(this.systemUsersHeading(),"System Users heading")
     }
 
     public async validateNewAdminUser(userNameValue: string): Promise<void> {
