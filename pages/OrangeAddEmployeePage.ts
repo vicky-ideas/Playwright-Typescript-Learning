@@ -4,7 +4,7 @@ type EmployeeData = {
         firstName: string;
         middleName: string;
         lastName: string;
-        employeeId: string;
+        employeeID: string;
     };
 
 
@@ -14,7 +14,7 @@ export class OrangeAddEmployeePage extends BasePage {
     private readonly firstNameInput = () => this.page.getByRole("textbox", { name: "First Name" });
     private readonly middleNameInput = () => this.page.getByRole("textbox", { name: "Middle Name" });
     private readonly lastNameInput = () => this.page.getByRole("textbox", { name: "Last Name" });
-    private readonly employeeIdInput = () => this.page.locator('.oxd-input-group').filter({
+    private readonly employeeIDInput = () => this.page.locator('.oxd-input-group').filter({
     has: this.page.getByText('Employee Id', { exact: true }),
     }).getByRole('textbox');
     private readonly saveButton = () => this.page.getByRole("button", { name: "Save" });
@@ -39,15 +39,15 @@ export class OrangeAddEmployeePage extends BasePage {
         await this.fill(this.lastNameInput(), lastName, "Last Name");
     }
 
-    public async fillEmployeeId(employeeId: string): Promise<void> {
-        await this.fill(this.employeeIdInput(), employeeId, "Employee ID");
+    public async fillEmployeeID(employeeID: string): Promise<void> {
+        await this.fill(this.employeeIDInput(), employeeID, "Employee ID");
     }
 
     public async fillEmployeeDetails(employeeData: EmployeeData): Promise<void> {
         await this.fillFirstName(employeeData.firstName);
         await this.fillMiddleName(employeeData.middleName);
         await this.fillLastName(employeeData.lastName);
-        await this.fillEmployeeId(employeeData.employeeId);
+        await this.fillEmployeeID(employeeData.employeeID);
     }
 
     public async uploadProfilePicture(filePath: string): Promise<void> {
@@ -55,8 +55,8 @@ export class OrangeAddEmployeePage extends BasePage {
         await fileInput.setInputFiles(filePath);
     }
 
-    public async getEmpId(): Promise<string> {
-        const empID = await this.employeeIdInput().inputValue();
+    public async getEmpID(): Promise<string> {
+        const empID = await this.employeeIDInput().inputValue();
         return empID;
     }
 

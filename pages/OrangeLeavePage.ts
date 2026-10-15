@@ -4,7 +4,7 @@ import { BasePage } from "./BasePage";
 
 export class OrangeLeavePage extends BasePage {
 
-    private readonly leavemenu = () => this.page.getByRole("link", { name: "Leave", exact: true });
+    private readonly leaveMenu = () => this.page.getByRole("link", { name: "Leave", exact: true });
     private readonly leaveListMenu = () => this.page.getByRole("link", { name: "Leave List" });
     private readonly myLeaveMenu = () => this.page.getByRole("link", { name: "My Leave" });
     private readonly applyMenu = () => this.page.getByRole("link", { name: "Apply" });
@@ -66,7 +66,7 @@ export class OrangeLeavePage extends BasePage {
 
 
     public async clickLeaveMenu(): Promise<void> {
-        await this.click(this.leavemenu(), "Leave Menu")
+        await this.click(this.leaveMenu(), "Leave Menu")
     }
 
     public async clickMyLeaveMenu(): Promise<void> {
@@ -155,12 +155,12 @@ export class OrangeLeavePage extends BasePage {
 
     public async verifyLeaveRequestStatus(employeeName: string, leaveType: string, expectedStatus: string): Promise<void> {
         const row = this.leaveRequestRow(employeeName, leaveType);
+        await expect(row).toHaveCount(1);
         await this.isElementVisible(row, `Leave request for ${employeeName}`);
         await this.isElementVisible(row.getByRole("cell", { name: employeeName }), `Employee Name ${employeeName}`);
         await this.isElementVisible(row.getByRole("cell", { name: leaveType }), `Leave Type ${leaveType}`);
         await this.isElementVisible(row.getByRole("cell", { name: expectedStatus }), `Leave Status ${expectedStatus}`);
-        logger.info("Leave request validated successfully");
-
+        logger.info(`Leave status verified: employee="${employeeName}", leaveType="${leaveType}", status="${expectedStatus}"`);
     }
 
 

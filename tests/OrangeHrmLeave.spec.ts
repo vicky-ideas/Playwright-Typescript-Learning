@@ -13,6 +13,9 @@ test("Task 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orang
     let employeeCreated = false;
     let systemUserCreated = false;
     let leaveType: string = "";
+    let testFailed = false;
+    let testFailure: unknown;
+    const cleanupFailures: string[] = [];
 
     const config = getOrangeHrmConfig();
 
@@ -45,8 +48,8 @@ test("Task 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orang
             employeeID = await orangeEmpDetailsPage.getEmployeeID();
             await orangeAddEmployeePage.uploadProfilePicture(orangeHrmData.profilePicPath);
             await orangeAddEmployeePage.clickSaveButton();
-            await orangeEmpDetailsPage.verifyEmpDetailsPageDisplayed();
             employeeCreated = true;
+            await orangeEmpDetailsPage.verifyEmpDetailsPageDisplayed();
             logger.info("Employee created successfully");
         })
 
@@ -61,7 +64,7 @@ test("Task 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orang
             await orangePimPage.verifySearchResult(employeeName);
         })
 
-        await test.step("Create a ESS user", async () => {
+        await test.step("Create an ESS user", async () => {
             const essCredentials = orangeHrmData.generateUniqueEssCredentials();
             essUserName = essCredentials.essUserName;
             essPassword = essCredentials.essPassword;
@@ -76,13 +79,13 @@ test("Task 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orang
             await orangeAdminPage.fillPassword(essPassword);
             await orangeAdminPage.fillConfirmPassword(essPassword);
             await orangeAdminPage.clickSaveButton();
-            await orangeAdminPage.validateSystemUserHeading();
-            logger.info("New Admin User has been created successfully");
             systemUserCreated = true;
+            await orangeAdminPage.validateSystemUserHeading();
+            logger.info("ESS user created successfully");
         })
 
         await test.step("Validate new ESS user", async () => {
-            await orangeAdminPage.validateNewAdminUser(essUserName);
+            await orangeAdminPage.validateNewSystemUser(essUserName);
         })
 
         await test.step("Add Entitlement for the Employee", async () => {
@@ -112,7 +115,7 @@ test("Task 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orang
             await orangeLeavePage.fillFromDate(fromDate);
             await orangeLeavePage.fillComment(orangeHrmData.leaveComment);
             await orangeLeavePage.clickApplyButton();
-            await orangeLeavePage.verifyToastMessage(orangeHrmData.successfullToastMessage);
+            await orangeLeavePage.verifyToastMessage(orangeHrmData.successfulToastMessage);
             await orangeLeavePage.clickMyLeaveMenu();
             await orangeLeavePage.verifyLeaveListPageDisplayed();
             await orangeLeavePage.verifyLeaveRequestStatus(employeeName, leaveType, orangeHrmData.pendingLeaveStatus);
@@ -152,45 +155,70 @@ test("Task 8 - OrangeHRM Leave Management Test", async ({ orangeLoginPage, orang
 
     } catch (error) {
         logger.error(`Leave management test failed: ${error}`);
-        throw error;
+        testFailed = true;
+        testFailure = error;
     } finally {
-        try {
-            if (!employeeCreated && !systemUserCreated) {
-                logger.info("No test data was created. Cleanup not required.");
-            } else if (await basePage.isPageClosed()) {
-                logger.error(
-                    "Cleanup cannot be performed because the Playwright page is already closed."
-                );
-            } else {
-                await orangeLoginPage.logoutUser();
+        if (!employeeCreated && !systemUserCreated) {
+            logger.info("No test data was created. Cleanup not required.");
+        } else if (await basePage.isPageClosed()) {
+            const message =
+                "Cleanup cannot be performed because the Playwright page is already closed.";
+            logger.error(message);
+            cleanupFailures.push(message);
+        } else {
+            const loginAsAdmin = async (): Promise<void> => {
+                try {
+                    await orangeLoginPage.logoutUser();
+                } catch (logoutError) {
+                    logger.info(`Could not log out before cleanup: ${logoutError}`);
+                }
+
                 await orangeLoginPage.loginToOrangeHRM(config.username, config.password);
-                await orangeLoginPage.goToDashboard();
+                await orangeLoginPage.verifySuccessfulLogin();
+            };
 
-                if (systemUserCreated) {
+            if (systemUserCreated) {
+                try {
+                    await loginAsAdmin();
                     await orangeAdminPage.deleteAdminUser(essUserName);
-                    logger.info(`System user deleted: ${essUserName}`);
+                    logger.info(`ESS user deleted: ${essUserName}`);
+                } catch (cleanupError) {
+                    const message = `ESS user cleanup failed: ${String(cleanupError)}`;
+                    logger.error(message);
+                    cleanupFailures.push(message);
                 }
-
-                if (employeeCreated) {
-                    if (!employeeID) {
-                        throw new Error(
-                            "Cleanup cannot continue because Employee ID was not captured"
-                        );
-                    }
-
-                    await orangePimPage.clickPimMenu();
-                    await orangePimPage.deleteEmployee(employeeID, employeeName);
-
-                    logger.info(`Employee deleted: ${employeeName}`);
-                }
-
-                await orangeLoginPage.logoutUser();
-                logger.info("Cleanup completed successfully");
             }
 
-        } catch (cleanupError) {
-            logger.error(`Cleanup failed: ${cleanupError}`);
+            if (employeeCreated) {
+                try {
+                    await loginAsAdmin();
+                    await orangePimPage.clickPimMenu();
+                    await orangePimPage.deleteEmployee(employeeID, employeeName);
+                    logger.info(
+                        `Employee deleted: name="${employeeName}", ID="${employeeID}"`
+                    );
+                } catch (cleanupError) {
+                    const message = `Employee cleanup failed: ${String(cleanupError)}`;
+                    logger.error(message);
+                    cleanupFailures.push(message);
+                }
+            }
         }
+    }
+
+    if (testFailed && cleanupFailures.length > 0) {
+        throw new Error(
+            `Task 8 failed: ${String(testFailure)}; ` +
+            `cleanup failures: ${cleanupFailures.join("; ")}`
+        );
+    }
+
+    if (testFailed) {
+        throw testFailure;
+    }
+
+    if (cleanupFailures.length > 0) {
+        throw new Error(`Cleanup failures: ${cleanupFailures.join("; ")}`);
     }
 
 });

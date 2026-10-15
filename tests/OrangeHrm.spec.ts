@@ -75,7 +75,7 @@ test("Task 6 - OrangeHRM Login Test", async ({ orangeLoginPage, orangePimPage, o
         await orangeAdminPage.clickSaveButton();
         await orangeAdminPage.validateSystemUserHeading();
         logger.info("New Admin User has been created successfully");
-        await orangeAdminPage.validateNewAdminUser(employeeName);
+        await orangeAdminPage.validateNewSystemUser(employeeName);
     })
 
     await test.step("Validate new user login and logout", async () => {

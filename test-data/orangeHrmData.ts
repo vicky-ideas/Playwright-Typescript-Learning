@@ -11,7 +11,7 @@ export const orangeHrmData = {
     leaveComment: "Vacation Leave",
     entitlementValue: "10",
     profilePicPath:path.resolve(__dirname, "../test-data/ProfilePicture.jpg"),
-    successfullToastMessage: "Successfully Saved",
+    successfulToastMessage: "Successfully Saved",
     updatedToastMessage: "Successfully Updated",
     pendingLeaveStatus: "Pending",
     approvedLeaveStatus: "Scheduled",
@@ -21,7 +21,7 @@ export const orangeHrmData = {
             firstName: `First${timestamp}`,
             middleName: `Mid${timestamp}`,
             lastName: `Last${timestamp}`,
-            employeeId: `23${timestamp}`
+            employeeID: `23${timestamp}`
         };
     },
     generateUniqueEssCredentials: function(){

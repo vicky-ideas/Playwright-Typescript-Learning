@@ -78,7 +78,7 @@ export class OrangeAdminPage extends BasePage {
         await this.isElementVisible(this.systemUsersHeading(),"System Users heading")
     }
 
-    public async validateNewAdminUser(userNameValue: string): Promise<void> {
+    public async validateNewSystemUser(userNameValue: string): Promise<void> {
         await this.fill(this.userNameInput(),userNameValue,"User Name field");
         await this.click(this.searchButton(), "Search button");
         await this.isElementVisible(this.usernameSearchResult(userNameValue),"Username Search Result")

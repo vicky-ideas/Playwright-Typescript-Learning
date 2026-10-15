@@ -6,7 +6,7 @@ export class OrangeEmpDetailsPage extends BasePage {
 
 
     private readonly empDetailsHeading = () => this.page.getByRole("heading", { name: "Personal Details" });
-    private readonly employeeIdValue = () => this.page.locator('.oxd-input-group').filter({hasText: 'Employee Id'}).locator('input')
+    private readonly employeeIDValue = () => this.page.locator('.oxd-input-group').filter({hasText: 'Employee Id'}).locator('input')
     private readonly employeeList = () => this.page.getByRole("link",{name:"Employee List"});
     private readonly genderCheck = (gendervalue: string) => this.page.getByRole("radio",{name:gendervalue, exact: true }).locator('..').locator('span.oxd-radio-input');
     private readonly driversLicenseNumberInput = () => this.page.locator('.oxd-input-group').filter({hasText: "Driver's License Number"}).locator('input')
@@ -24,7 +24,7 @@ export class OrangeEmpDetailsPage extends BasePage {
     }
 
     public async getEmployeeID(): Promise<string> {
-        const employeeID = this.employeeIdValue();
+        const employeeID = this.employeeIDValue();
         return await employeeID.inputValue();
     }
 
